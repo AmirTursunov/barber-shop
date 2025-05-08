@@ -3,7 +3,7 @@ import { SignIn } from "@clerk/nextjs";
 
 const Login = () => {
   return (
-    <div className="d-flex justify-content-center mt-5">
+    <div style={{ margin: "110px" }} className="flex justify-center">
       <div className="mt-5">
         <SignIn afterSignInUrl="/post-login" />
       </div>

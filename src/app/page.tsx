@@ -1,16 +1,11 @@
 "use client";
-import { useRouter } from "next/navigation";
+import { SignOutButton } from "@clerk/nextjs";
 import React from "react";
 
 const Home = () => {
-  const router = useRouter();
-  function click() {
-    console.log(1234);
-    router.push("/sign-in");
-  }
   return (
     <div>
-      <button onClick={click}>Sign in</button>
+      <SignOutButton />
     </div>
   );
 };
