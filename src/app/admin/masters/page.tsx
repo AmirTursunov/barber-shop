@@ -79,7 +79,9 @@ const AdminMasters = () => {
       await getMasters();
     }
   }
-
+  /**
+ bu funksiya edit qiladi
+ */
   const handleEdit = (master: Master) => {
     setSelectedMaster(master);
     setName(master.name);
