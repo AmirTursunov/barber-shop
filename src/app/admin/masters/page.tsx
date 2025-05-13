@@ -7,18 +7,12 @@ import { Edit, Delete } from "lucide-react";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
-const skillOptions = [
-  { value: "Haircut", label: "Haircut" },
-  { value: "Makeup", label: "Makeup" },
-  { value: "Massage", label: "Massage" },
-  { value: "Nails", label: "Nails" },
-];
-
 interface Master {
   id: number;
   name: string;
   skills: string[];
   phone: string;
+  time: string;
 }
 interface Option {
   value: string;
@@ -30,6 +24,7 @@ const AdminMasters = () => {
   const [name, setName] = useState("");
   const [skills, setSkills] = useState<string[]>([]);
   const [phone, setPhone] = useState("");
+  const [time, setTime] = useState("");
   const [masters, setMasters] = useState<Master[]>([]);
   const [selectedMaster, setSelectedMaster] = useState<Master | null>(null);
   const [searchValue, setSearchValue] = useState("");
@@ -50,7 +45,7 @@ const AdminMasters = () => {
         .update({ name, skills, phone })
         .eq("id", selectedMaster.id);
     } else {
-      await supabase.from("masters").insert([{ name, skills, phone }]);
+      await supabase.from("masters").insert([{ name, skills, phone, time }]);
     }
     setIsLoading(false);
     setIsOpen(false);
@@ -124,6 +119,7 @@ const AdminMasters = () => {
               <th className="py-3 px-4 text-left">Name</th>
               <th className="py-3 px-4 text-left">Skills</th>
               <th className="py-3 px-4 text-left">Phone</th>
+              <th className="py-3 px-4 text-left">Working Hours</th>
               <th className="py-3 px-4 text-left">Actions</th>
             </tr>
           </thead>
@@ -144,6 +140,9 @@ const AdminMasters = () => {
                       <Skeleton width={100} />
                     </td>
                     <td className="py-3 px-4">
+                      <Skeleton width={100} />
+                    </td>
+                    <td className="py-3 px-4">
                       <Skeleton width={60} />
                     </td>
                   </tr>
@@ -154,6 +153,7 @@ const AdminMasters = () => {
                     <td className="py-3 px-4">{master.name}</td>
                     <td className="py-3 px-4">{master.skills.join(", ")}</td>
                     <td className="py-3 px-4">{master.phone}</td>
+                    <td className="py-3 px-4">{master.time}</td>
                     <td className="py-3 px-4 flex items-center gap-2">
                       <button
                         onClick={() => handleEdit(master)}
@@ -213,7 +213,13 @@ const AdminMasters = () => {
               onChange={(e) => setPhone(e.target.value)}
               className="w-full mb-3 px-3 py-2 border rounded focus:outline-none"
             />
-
+            <input
+              type="text"
+              placeholder="Working Hours (e.g. 9:00 - 18:00)"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+              className="w-full mb-3 px-3 py-2 border rounded focus:outline-none"
+            />
             <div className="flex justify-end">
               {isLoading ? (
                 <button
