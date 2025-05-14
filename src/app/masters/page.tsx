@@ -6,9 +6,8 @@ import Navbar from "../navbar/page";
 interface Master {
   id: number;
   name: string;
-  specialty: string;
-  description: string;
-  photo_url: string;
+  skills: string[];
+  time: string;
 }
 
 const images = ["/bgbarber5.png", "/barberbg4.png", "/bgbarber3.png"];
@@ -39,7 +38,7 @@ export default function MastersPage() {
   }, []);
 
   if (loading) {
-    return <div className="text-center text-xl py-10">Yuklanmoqda...</div>;
+    return <div className="text-center text-xl py-10">Loading ...</div>;
   }
 
   return (
@@ -59,15 +58,13 @@ export default function MastersPage() {
       />
 
       {/* Navbar */}
-      <div className="relative z-20">
+      <div className="relative z-30">
         <Navbar />
       </div>
 
       {/* Masters section */}
-      <div className="relative z-30 max-w-7xl mx-auto px-4 py-20">
-        <h1 className="text-4xl font-bold text-center mb-12">
-          Bizning Ustalar
-        </h1>
+      <div className="relative z-21 max-w-7xl mx-auto px-4 py-20">
+        <h1 className="text-4xl font-bold text-center mb-12">Our Masters</h1>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-16">
           {masters.map((master) => (
             <div
@@ -82,11 +79,18 @@ export default function MastersPage() {
               <h2 className="text-3xl font-extrabold tracking-wider uppercase mb-2">
                 {master.name}
               </h2>
-              <p className="text-sm uppercase text-gray-300">
-                {master.specialty}
-              </p>
+              <div className="flex flex-wrap gap-2">
+                {master.skills.map((skill, index) => (
+                  <span
+                    key={index}
+                    className="bg-blue-200 text-blue-800 text-xs px-3 py-1 rounded-full uppercase font-semibold"
+                  >
+                    {skill}
+                  </span>
+                ))}
+              </div>
               <p className="text-sm text-gray-400 mt-1 max-w-md">
-                {master.description}
+                Working hours : {master.time}
               </p>
             </div>
           ))}

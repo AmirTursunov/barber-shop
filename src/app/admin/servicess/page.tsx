@@ -9,6 +9,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 interface Service {
   id: number;
   name: string;
+  category: string;
   time: string;
   price: string;
 }
@@ -17,6 +18,7 @@ const AdminServices = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [services, setServices] = useState<Service[]>([]);
   const [name, setName] = useState("");
+  const [category, setCategory] = useState("");
   const [time, setTime] = useState("");
   const [price, setPrice] = useState("");
   const [searchValue, setSearchValue] = useState("");
@@ -37,10 +39,10 @@ const AdminServices = () => {
     if (selectedService) {
       await supabase
         .from("services")
-        .update({ name, time, price })
+        .update({ name, time, price, category })
         .eq("id", selectedService.id);
     } else {
-      await supabase.from("services").insert([{ name, time, price }]);
+      await supabase.from("services").insert([{ name, time, price, category }]);
     }
     setIsLoading(false);
     setIsOpen(false);
@@ -56,9 +58,14 @@ const AdminServices = () => {
   function handleEdit(service: Service) {
     setSelectedService(service);
     setName(service.name);
+    setCategory(service.category);
     setTime(service.time);
     setPrice(service.price);
     setIsOpen(true);
+  }
+  async function handleDelete(id: number) {
+    await supabase.from("services").delete().eq("id", id);
+    getServices();
   }
   return (
     <div className="flex flex-col gap-20">
@@ -76,6 +83,7 @@ const AdminServices = () => {
             setSelectedService(null);
             setName("");
             setTime("");
+            setCategory("");
             setPrice("");
           }}
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 cursor-pointer"
@@ -83,13 +91,14 @@ const AdminServices = () => {
           + Add Service
         </button>
       </div>
-
+      {/* table for services */}
       <div className="flex justify-center mt-7">
         <table className=" border border-gray-300 divide-y divide-gray-200 shadow-md rounded-lg overflow-hidden w-[900px]">
           <thead className="bg-gray-100 text-gray-700 text-sm uppercase w-[800px]">
             <tr>
               <th className="py-3 px-4 text-left">No</th>
               <th className="py-3 px-4 text-left">Name</th>
+              <th className="py-3 px-4 text-left">Category</th>
               <th className="py-3 px-4 text-left">Time</th>
               <th className="py-3 px-4 text-left">Price</th>
               <th className="py-3 px-4 text-left">Actions</th>
@@ -101,6 +110,9 @@ const AdminServices = () => {
                   <tr key={index} className="hover:bg-gray-50">
                     <td className="py-3 px-4">
                       <Skeleton width={20} />
+                    </td>
+                    <td className="py-3 px-4">
+                      <Skeleton width={100} />
                     </td>
                     <td className="py-3 px-4">
                       <Skeleton width={100} />
@@ -120,6 +132,7 @@ const AdminServices = () => {
                   <tr key={service.id} className="hover:bg-gray-50">
                     <td className="py-3 px-4">{i + 1}</td>
                     <td className="py-3 px-4">{service.name}</td>
+                    <td className="py-3 px-4">{service.category}</td>
                     <td className="py-3 px-4">{service.time} min</td>
                     <td className="py-3 px-4">${service.price}</td>
                     <td className="py-3 px-4 flex items-center gap-2">
@@ -129,7 +142,10 @@ const AdminServices = () => {
                       >
                         <Edit />
                       </button>
-                      <button className="text-red-500 hover:text-red-700">
+                      <button
+                        onClick={() => handleDelete(service.id)}
+                        className="text-red-500 hover:text-red-700"
+                      >
                         <Delete />
                       </button>
                     </td>
@@ -158,6 +174,13 @@ const AdminServices = () => {
               onChange={(e) => setName(e.target.value)}
               type="text"
               placeholder="name"
+              className="w-full mb-3 px-3 py-2 border rounded focus:outline-none"
+            />
+            <input
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              type="text"
+              placeholder="category"
               className="w-full mb-3 px-3 py-2 border rounded focus:outline-none"
             />
 

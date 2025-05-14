@@ -5,13 +5,21 @@ import { supabase } from "../supabaseClient";
 import { ArrowRight, LogIn } from "lucide-react";
 import Link from "next/link";
 import { Tooltip } from "react-tooltip";
-import { FiHome, FiUser, FiShoppingCart, FiInfo } from "react-icons/fi";
+import {
+  FiHome,
+  FiUser,
+  FiShoppingCart,
+  FiInfo,
+  FiScissors,
+} from "react-icons/fi";
 import "react-tooltip/dist/react-tooltip.css";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { usePathname } from "next/navigation";
+import path from "path";
 const Navbar = () => {
   const [phone, setPhone] = useState("");
   const [activeLink, setActiveLink] = useState<string>("home");
-
+  const pathname = usePathname();
   useEffect(() => {
     getPhone();
   }, []);
@@ -35,9 +43,8 @@ const Navbar = () => {
               <Link
                 href="/"
                 className={`hover:text-[#c8865c] transition-colors ${
-                  activeLink === "home" ? "text-[#c8865c]" : ""
+                  pathname === "/" ? "text-[#c8865c]" : ""
                 }`}
-                onClick={() => setActiveLink("home")}
               >
                 Home
               </Link>
@@ -46,18 +53,17 @@ const Navbar = () => {
               <Link
                 href="/masters"
                 className={`hover:text-[#c8865c] transition-colors ${
-                  activeLink === "masters" ? "text-[#c8865c]" : ""
+                  pathname === "/masters" ? "text-[#c8865c]" : ""
                 }`}
-                onClick={() => setActiveLink("masters")}
               >
                 Masters
               </Link>
             </li>
             <li>
               <Link
-                href="/services"
+                href="/servicess"
                 className={`hover:text-[#c8865c] transition-colors ${
-                  activeLink === "services" ? "text-[#c8865c]" : ""
+                  pathname === "/servicess" ? "text-[#c8865c]" : ""
                 }`}
                 onClick={() => setActiveLink("services")}
               >
@@ -68,7 +74,7 @@ const Navbar = () => {
               <Link
                 href="/about-us"
                 className={`hover:text-[#c8865c] transition-colors ${
-                  activeLink === "about-us" ? "text-[#c8865c]" : ""
+                  pathname === "/about-us" ? "text-[#c8865c]" : ""
                 }`}
                 onClick={() => setActiveLink("about-us")}
               >
@@ -121,7 +127,7 @@ const Navbar = () => {
         <Link
           href="/"
           className={`transition-transform ${
-            activeLink === "home" ? "scale-125 text-white" : "text-white/70"
+            pathname === "/" ? "scale-125 text-white" : "text-white/70"
           }`}
           onClick={() => setActiveLink("home")}
         >
@@ -130,7 +136,7 @@ const Navbar = () => {
         <Link
           href="/masters"
           className={`transition-transform ${
-            activeLink === "masters" ? "scale-125 text-white" : "text-white/70"
+            pathname === "/masters" ? "scale-125 text-white" : "text-white/70"
           }`}
           onClick={() => setActiveLink("masters")}
         >
@@ -139,16 +145,16 @@ const Navbar = () => {
         <Link
           href="/services"
           className={`transition-transform ${
-            activeLink === "services" ? "scale-125 text-white" : "text-white/70"
+            pathname === "/servicess" ? "scale-125 text-white" : "text-white/70"
           }`}
           onClick={() => setActiveLink("services")}
         >
-          <FiShoppingCart size={24} />
+          <FiScissors size={24} />
         </Link>
         <Link
           href="/about-us"
           className={`transition-transform ${
-            activeLink === "about-us" ? "scale-125 text-white" : "text-white/70"
+            pathname === "/about-us" ? "scale-125 text-white" : "text-white/70"
           }`}
           onClick={() => setActiveLink("about-us")}
         >
