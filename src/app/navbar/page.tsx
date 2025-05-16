@@ -1,24 +1,19 @@
 "use client";
-import { ClerkProvider } from "@clerk/nextjs";
+import { ClerkProvider, useUser } from "@clerk/nextjs";
 import React, { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 import { ArrowRight, LogIn } from "lucide-react";
 import Link from "next/link";
 import { Tooltip } from "react-tooltip";
-import {
-  FiHome,
-  FiUser,
-  FiShoppingCart,
-  FiInfo,
-  FiScissors,
-} from "react-icons/fi";
+import { FiHome, FiUser, FiInfo, FiScissors } from "react-icons/fi";
 import "react-tooltip/dist/react-tooltip.css";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
-import path from "path";
 const Navbar = () => {
   const [phone, setPhone] = useState("");
   const [activeLink, setActiveLink] = useState<string>("home");
+  console.log(activeLink);
+  const { user } = useUser();
   const pathname = usePathname();
   useEffect(() => {
     getPhone();
@@ -34,7 +29,7 @@ const Navbar = () => {
     <>
       <div className="hidden lg:flex justify-between items-center px-10 text-white relative z-100 border-b border-white pb-4">
         <div className="flex items-center mt-3">
-          <img className="w-25" src="barberWhite.png" alt="logo" />
+          <img className="w-25" src="/barberWhite.png" alt="logo" />
           <h1 className="text-3xl">Trimly</h1>
         </div>
         <div className="pt-3 flex items-center gap-7">
@@ -113,7 +108,7 @@ const Navbar = () => {
               </SignedIn>
             </ClerkProvider>
             <Link
-              href={"/profile"}
+              href={user ? `/appointment/${user.id}` : "/sign-in"}
               className="p-3 px-4 bg-[#c8865c] text-white flex items-center gap-2 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:bg-[#b4744e]"
             >
               Book a visit <ArrowRight />
@@ -147,7 +142,7 @@ const Navbar = () => {
           className={`transition-transform ${
             pathname === "/servicess" ? "scale-125 text-white" : "text-white/70"
           }`}
-          onClick={() => setActiveLink("services")}
+          onClick={() => setActiveLink("servicess")}
         >
           <FiScissors size={24} />
         </Link>

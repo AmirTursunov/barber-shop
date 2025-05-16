@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
 import Navbar from "../navbar/page";
+import Footer from "../footer/page";
+import Image from "next/image";
 
 interface Master {
   id: number;
@@ -10,19 +12,9 @@ interface Master {
   time: string;
 }
 
-const images = ["/bgbarber5.png", "/barberbg4.png", "/bgbarber3.png"];
-
 export default function MastersPage() {
   const [masters, setMasters] = useState<Master[]>([]);
   const [loading, setLoading] = useState(true);
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 4000);
-    return () => clearInterval(interval);
-  }, []);
 
   useEffect(() => {
     const fetchMasters = async () => {
@@ -42,44 +34,60 @@ export default function MastersPage() {
   }
 
   return (
-    <div className="relative w-full min-h-screen overflow-hidden text-white">
-      {/* Background image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center transition-all duration-1000"
-        style={{ backgroundImage: `url(${images[currentIndex]})` }}
-      />
+    <div className="w-full min-h-screen text-white">
+      {/* Hero Section with Background */}
+      <div className="relative w-full h-[100vh]">
+        {/* Background Image */}
+        <div
+          className="absolute inset-0 bg-cover bg-center "
+          style={{ backgroundImage: "url(bgservice.png)" }}
+        />
 
-      {/* Dark overlay */}
-      <div
-        className="absolute inset-0 z-10"
-        style={{
-          backgroundColor: "rgba(0, 0, 0, 0.5)",
-        }}
-      />
+        {/* Dark Overlay */}
 
-      {/* Navbar */}
-      <div className="relative z-30">
-        <Navbar />
+        <div
+          className="absolute inset-0 z-10"
+          style={{
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+          }}
+        />
+        {/* Navbar */}
+        <div className="relative z-20">
+          <Navbar />
+        </div>
+
+        {/* Title Section */}
+        <div className="relative z-20 flex flex-col items-center justify-center h-[600px] text-center ">
+          <h1 className="text-7xl font-bold tracking-widest">Masters</h1>
+          <div className="mt-4">
+            <a className="hover:text-[#c8865c] mx-1" href="/">
+              Home
+            </a>{" "}
+            / <span className="mx-1">Masters</span>
+          </div>
+        </div>
       </div>
 
-      {/* Masters section */}
-      <div className="relative z-21 max-w-7xl mx-auto px-4 py-20">
-        <h1 className="text-4xl font-bold text-center mb-12">Our Masters</h1>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-16">
+      {/* Masters List Section */}
+      <div className="bg-white text-black py-16 px-4">
+        <h2 className="text-4xl font-bold text-center mb-12">Our Masters</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12 max-w-7xl mx-auto">
           {masters.map((master) => (
             <div
               key={master.id}
               className="flex flex-col items-center text-center"
             >
-              <img
-                src="master1.png"
+              <Image
+                src="/master1.png"
+                width={500}
+                height={400}
                 alt={master.name}
-                className="w-full max-w-sm  object-cover mb-6 rounded-lg shadow-lg "
+                className="w-full max-w-sm object-cover mb-6 rounded-lg shadow-lg"
               />
-              <h2 className="text-3xl font-extrabold tracking-wider uppercase mb-2">
+              <h3 className="text-2xl font-bold uppercase mb-2">
                 {master.name}
-              </h2>
-              <div className="flex flex-wrap gap-2">
+              </h3>
+              <div className="flex flex-wrap gap-2 justify-center">
                 {master.skills.map((skill, index) => (
                   <span
                     key={index}
@@ -89,13 +97,14 @@ export default function MastersPage() {
                   </span>
                 ))}
               </div>
-              <p className="text-sm text-gray-400 mt-1 max-w-md">
-                Working hours : {master.time}
+              <p className="text-sm text-gray-600 mt-1 max-w-md">
+                Working hours: {master.time}
               </p>
             </div>
           ))}
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
