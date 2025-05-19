@@ -1,7 +1,86 @@
+"use client";
+import Footer from "@/app/footer/page";
 import Navbar from "@/app/navbar/page";
-import React from "react";
+import { supabase } from "@/app/supabaseClient";
+import { useUser } from "@clerk/nextjs";
+import React, { useEffect, useState } from "react";
+interface Service {
+  id: number;
+  name: string;
+  category: string;
+}
+
+interface Barber {
+  id: number;
+  name: string;
+  time: string;
+}
+const locations = ["Mustaqillik", "Piridastgir", "Alpomish"];
 
 const AppointmentPage = () => {
+  const [services, setServices] = useState<Service[]>([]);
+  const [barbers, setBarbers] = useState<Barber[]>([]);
+  const [selectedBarberId, setSelectedBarberId] = useState<number | null>(null);
+  const [selectedLocationIndex, setSelectedLocationIndex] = useState<
+    number | null
+  >(null);
+  const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedTime, setSelectedTime] = useState("");
+  const [selectedServices, setSelectedServices] = useState<number[]>([]);
+  const { user } = useUser();
+  useEffect(() => {
+    const fetchData = async () => {
+      const { data: servicesData } = await supabase
+        .from("services")
+        .select("*");
+      const { data: barbersData } = await supabase.from("masters").select("*");
+      if (servicesData) setServices(servicesData);
+      if (barbersData) setBarbers(barbersData);
+    };
+    fetchData();
+  }, []);
+  async function handleSubmit() {
+    const selectedBarberName = barbers.find(
+      (b) => b.id === selectedBarberId
+    )?.name;
+
+    const { error } = await supabase.from("appointments").insert([
+      {
+        full_name: fullName,
+        phone,
+        email,
+        location: locations[selectedLocationIndex!],
+        services: selectedServiceNames,
+        date: selectedDate,
+        time: selectedTime,
+        barber: selectedBarberName,
+        user_id: user?.id,
+      },
+    ]);
+
+    if (error) {
+      console.error("Error inserting appointment:", error);
+      alert("Failed to book appointment.");
+    } else {
+      alert("Appointment booked successfully!");
+      setFullName("");
+      setPhone("");
+      setEmail("");
+      setSelectedDate("");
+      setSelectedTime("");
+      setSelectedBarberId(null);
+      setSelectedLocationIndex(null);
+      setSelectedServices([]);
+    }
+  }
+  const selectedServiceNames = services
+    .filter((service) => selectedServices.includes(service.id))
+    .map((service) => service.name);
+  const today = new Date().toISOString().split("T")[0];
+
   return (
     <div className="relative min-h-screen text-white">
       {/* Background image */}
@@ -23,12 +102,14 @@ const AppointmentPage = () => {
         <div className="relative z-30">
           <Navbar />
         </div>
-        <div className="relative z-20 flex flex-col items-center justify-center h-[600px] text-center ">
-          <h1 className="text-7xl font-bold tracking-widest">Appointment</h1>
-          <div className="mt-4">
+        <div className="relative z-20 flex flex-col items-center justify-center h-[600px] text-center px-4">
+          <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold tracking-wide">
+            Appointment
+          </h1>
+          <div className="mt-4 text-sm md:text-base">
             <a className="hover:text-[#c8865c] mx-1" href="/">
               Home
-            </a>{" "}
+            </a>
             / <span className="mx-1">Appointment</span>
           </div>
         </div>
@@ -38,54 +119,226 @@ const AppointmentPage = () => {
         <span className="uppercase text-white font-semibold text-md ml-2">
           // Make an appointment
         </span>
-        <div className="mt-7">
-          <div className="flex flex-col gap-10">
-            <h1 className="uppercase text-6xl font-bold max-w-sm">
+        <div className="mt-7 flex flex-col lg:flex-row gap-10 px-4 lg:px-10">
+          <div className="flex flex-col gap-10 lg:w-1/2">
+            <h1 className="uppercase text-4xl lg:text-6xl font-bold max-w-full lg:max-w-sm">
               Reserve your spot, pamper yourself
             </h1>
-            <p className="max-w-xl">
+            <p className="max-w-full lg:max-w-xl">
               Whether you’re looking for a precise haircut, a luxurious shave,
               or expert beard grooming, our team is here to craft the perfect
               style just for you. Secure your spot today and experience the
               difference!
             </p>
+            {/* Hours */}
             <div className="flex flex-col gap-5">
-              <h1 className="uppercase text-3xl font-bold">Business hours</h1>
+              <h1 className="uppercase text-2xl lg:text-3xl font-bold">
+                Business hours
+              </h1>
+
               <div>
                 <span className="font-normal">Mon - Fri:</span>
-                <div className="w-[350px]">
-                  <h1 className="text-4xl font-bold border-b border-gray-700 pb-5">
+                <div className="w-full lg:w-[350px]">
+                  <h1 className="text-3xl lg:text-4xl font-bold border-b border-gray-700 pb-3 lg:pb-5">
                     9AM - 8PM
                   </h1>
                 </div>
               </div>
               <div>
                 <span className="font-normal">Sat:</span>
-                <div className="w-[350px]">
-                  <h1 className="text-4xl font-bold border-b border-gray-700 pb-5">
+                <div className="w-full lg:w-[350px]">
+                  <h1 className="text-3xl lg:text-4xl font-bold border-b border-gray-700 pb-3 lg:pb-5">
                     9AM - 6PM
                   </h1>
                 </div>
               </div>
               <div>
                 <span className="font-normal">Sun:</span>
-                <div className="w-[350px]">
-                  <h1 className="text-4xl font-bold border-b border-gray-700 pb-5">
+                <div className="w-full lg:w-[350px]">
+                  <h1 className="text-3xl lg:text-4xl font-bold border-b border-gray-700 pb-3 lg:pb-5">
                     10AM - 5PM
                   </h1>
                 </div>
               </div>
             </div>
+
             <div>
-              <h1 className="uppercase text-3xl font-bold">Booking number</h1>
-              <p className="text-[#c8865c] text-3xl font-bold mt-3">
+              <h1 className="uppercase text-2xl lg:text-3xl font-bold">
+                Booking number
+              </h1>
+              <p className="text-[#c8865c] text-2xl lg:text-3xl font-bold mt-3">
                 +9998001234567
               </p>
             </div>
           </div>
-          <div></div>
+
+          <div className="bg-[#121212] text-white py-10 px-4 md:px-6 lg:px-10 w-full lg:w-1/2">
+            <h1 className="text-3xl lg:text-4xl font-bold mb-8">
+              BOOK AN APPOINTMENT
+            </h1>
+
+            {/* LOCATIONS */}
+            <div className="mb-10">
+              <h2 className="text-lg lg:text-xl font-bold mb-4">
+                OUR LOCATIONS
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {locations.map((location, index) => (
+                  <div
+                    key={index}
+                    onClick={() => setSelectedLocationIndex(index)}
+                    className={`p-4 border cursor-pointer transition-all duration-200 ${
+                      selectedLocationIndex === index
+                        ? "bg-[#c8865c] text-black border-none"
+                        : "border-gray-700 hover:border-[#c8865c]"
+                    }`}
+                  >
+                    <p>{location}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* SERVICES */}
+            <div className="mb-10">
+              <h2 className="text-lg lg:text-xl font-bold mb-4">
+                PREFERRED SERVICE
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {services.map((service) => (
+                  <label
+                    key={service.id}
+                    className="flex items-center space-x-2"
+                  >
+                    <input
+                      required
+                      type="checkbox"
+                      className="form-checkbox text-[#c8865c]"
+                      checked={selectedServices.includes(service.id)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setSelectedServices([
+                            ...selectedServices,
+                            service.id,
+                          ]);
+                        } else {
+                          setSelectedServices(
+                            selectedServices.filter((id) => id !== service.id)
+                          );
+                        }
+                      }}
+                    />
+                    <span>{service.name}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            {/* Input date kalendar rangini o'zgartirish */}
+
+            {/* TIME */}
+            <div className="mb-10">
+              <h2 className="text-lg lg:text-xl font-bold mb-4">
+                SELECT YOUR TIME
+              </h2>
+              <p>Please choose according to the master's time !</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <label>
+                  <input
+                    required
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    min={today}
+                    type="date"
+                    className="bg-blak text-white border border-gray-700 p-3 rounded w-full"
+                  />
+                </label>
+                <input
+                  required
+                  value={selectedTime}
+                  onChange={(e) => setSelectedTime(e.target.value)}
+                  type="time"
+                  className="bg-black text-white border border-gray-700 p-3 rounded w-full"
+                />
+              </div>
+            </div>
+
+            {/* BARBER SELECT */}
+            <div className="mb-10">
+              <h2 className="text-lg lg:text-xl font-bold mb-4">
+                PREFERRED BARBER
+              </h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {barbers.map((barber) => (
+                  <div
+                    key={barber.id}
+                    onClick={() => setSelectedBarberId(barber.id)}
+                    className={`text-center p-2 rounded cursor-pointer transition-all duration-200 ${
+                      selectedBarberId === barber.id
+                        ? "border-4 border-[#c8865c] bg-black"
+                        : "border border-gray-700 hover:border-[#c8865c]"
+                    }`}
+                  >
+                    <img
+                      src="/master1.png"
+                      alt={barber.name}
+                      className="w-full h-40 object-cover rounded"
+                    />
+                    <p className="mt-2 font-semibold">{barber.name}</p>
+                    <p>{barber.time}</p>
+                  </div>
+                ))}
+              </div>
+              {!selectedBarberId && (
+                <p className="text-sm text-red-400 mt-2">
+                  Please choose master!
+                </p>
+              )}
+            </div>
+
+            {/* USER INFO */}
+            <div className="mb-10">
+              <h2 className="text-lg lg:text-xl font-bold mb-4">
+                YOUR DETAILS
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  type="text"
+                  placeholder="Your Full Name *"
+                  className="bg-black text-white border border-gray-700 p-3 rounded w-full"
+                />
+                <input
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  type="text"
+                  placeholder="Phone Number *"
+                  className="bg-black text-white border border-gray-700 p-3 rounded w-full"
+                />
+                <input
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  type="email"
+                  placeholder="Email Address *"
+                  className="bg-black text-white border border-gray-700 p-3 rounded w-full md:col-span-2"
+                />
+              </div>
+            </div>
+
+            {/* SUBMIT */}
+            <div className="text-center">
+              <button
+                onClick={handleSubmit}
+                className="bg-[#c8865c] text-white font-bold px-8 py-3 rounded hover:opacity-90 transition-all"
+              >
+                SUBMIT →
+              </button>
+            </div>
+          </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

@@ -9,6 +9,7 @@ import { FiHome, FiUser, FiInfo, FiScissors } from "react-icons/fi";
 import "react-tooltip/dist/react-tooltip.css";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
+import { FaCalendarCheck } from "react-icons/fa";
 const Navbar = () => {
   const [phone, setPhone] = useState("");
   const [activeLink, setActiveLink] = useState<string>("home");
@@ -76,6 +77,17 @@ const Navbar = () => {
                 About us
               </Link>
             </li>
+            <li>
+              <Link
+                href="/books"
+                className={`hover:text-[#c8865c] transition-colors ${
+                  pathname === "/books" ? "text-[#c8865c]" : ""
+                }`}
+                onClick={() => setActiveLink("books")}
+              >
+                My bookings
+              </Link>
+            </li>
           </ul>
         </div>
         <div className="pt-1.5 flex items-center gap-4">
@@ -138,7 +150,7 @@ const Navbar = () => {
           <FiUser size={24} />
         </Link>
         <Link
-          href="/services"
+          href="/servicess"
           className={`transition-transform ${
             pathname === "/servicess" ? "scale-125 text-white" : "text-white/70"
           }`}
@@ -147,13 +159,13 @@ const Navbar = () => {
           <FiScissors size={24} />
         </Link>
         <Link
-          href="/about-us"
+          href="/books"
           className={`transition-transform ${
-            pathname === "/about-us" ? "scale-125 text-white" : "text-white/70"
+            pathname === "/books" ? "scale-125 text-white" : "text-white/70"
           }`}
-          onClick={() => setActiveLink("about-us")}
+          onClick={() => setActiveLink("books")}
         >
-          <FiInfo size={24} />
+          <FaCalendarCheck size={24} />
         </Link>
         <ClerkProvider>
           <SignedOut>

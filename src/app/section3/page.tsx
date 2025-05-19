@@ -1,6 +1,10 @@
+import { useUser } from "@clerk/nextjs";
 import Image from "next/image";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 
 export default function Section3() {
+  const { user } = useUser();
   return (
     <section className="bg-[#111] text-white px-6 md:px-20 py-16">
       <h2 className="text-3xl md:text-4xl font-bold mb-10 uppercase">
@@ -64,9 +68,12 @@ export default function Section3() {
             </div>
 
             <div className="mt-6">
-              <button className="w-full lg:w-auto bg-[#c18f61] text-white px-6 py-3 rounded uppercase text-sm font-semibold hover:bg-[#a5744b] transition flex items-center justify-center gap-2">
+              <Link
+                href={user ? `/appointment/${user.id}` : "/sign-in"}
+                className="w-full lg:w-auto bg-[#c18f61] text-white px-6 py-3 rounded uppercase text-sm font-semibold hover:bg-[#a5744b] transition flex items-center justify-center gap-2"
+              >
                 Book an Appointment →
-              </button>
+              </Link>
             </div>
           </div>
 

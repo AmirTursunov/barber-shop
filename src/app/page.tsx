@@ -51,7 +51,7 @@ const Home = () => {
             </div>
             <div>
               <button
-                onClick={() => redirect("/profile")}
+                onClick={() => redirect("/servicess")}
                 className="p-3 px-5 bg-[#c8865c] flex text-white gap-2 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:bg-[#b4744e]"
               >
                 Learn More <ArrowRight />
