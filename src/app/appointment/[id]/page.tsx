@@ -8,12 +8,14 @@ interface Service {
   id: number;
   name: string;
   category: string;
+  price: string;
 }
 
 interface Barber {
   id: number;
   name: string;
   time: string;
+  skills: string[];
 }
 const locations = ["Mustaqillik", "Piridastgir", "Alpomish"];
 
@@ -31,6 +33,7 @@ const AppointmentPage = () => {
   const [selectedTime, setSelectedTime] = useState("");
   const [selectedServices, setSelectedServices] = useState<number[]>([]);
   const { user } = useUser();
+
   useEffect(() => {
     const fetchData = async () => {
       const { data: servicesData } = await supabase
@@ -78,8 +81,37 @@ const AppointmentPage = () => {
   }
   const selectedServiceNames = services
     .filter((service) => selectedServices.includes(service.id))
-    .map((service) => service.name);
-  const today = new Date().toISOString().split("T")[0];
+    .map((service) => service.name.toLowerCase());
+
+  const filteredBarbers = barbers.filter((barber) => {
+    const barberSkills = (barber.skills || []).map((s) => s.toLowerCase());
+    return selectedServiceNames.every((selected) =>
+      barberSkills.includes(selected)
+    );
+  });
+
+  // logic for input date
+  const today = new Date();
+  const minDate = today.toISOString().split("T")[0];
+
+  const maxDateObj = new Date(today);
+  maxDateObj.setDate(today.getDate() + 2);
+  const maxDate = maxDateObj.toISOString().split("T")[0];
+  // logic for input date
+
+  // logic for input time
+  function handleTime(e: React.ChangeEvent<HTMLInputElement>) {
+    const value = e.target.value;
+    const [hour, minute] = value.split(":").map(Number);
+
+    if (hour < 9 || hour > 20 || (hour === 20 && minute > 0)) {
+      alert("Please choose time according to the business hours !");
+      return;
+    }
+
+    setSelectedTime(value);
+  }
+  // logic for input time
 
   return (
     <div className="relative min-h-screen text-white">
@@ -228,13 +260,16 @@ const AppointmentPage = () => {
                         }
                       }}
                     />
-                    <span>{service.name}</span>
+                    <p className="flex gap-5 items-center">
+                      {service.name}
+                      <span className="text-sm text-[#c8865c]">
+                        ({service.price}$)
+                      </span>
+                    </p>
                   </label>
                 ))}
               </div>
             </div>
-
-            {/* Input date kalendar rangini o'zgartirish */}
 
             {/* TIME */}
             <div className="mb-10">
@@ -248,17 +283,21 @@ const AppointmentPage = () => {
                     required
                     value={selectedDate}
                     onChange={(e) => setSelectedDate(e.target.value)}
-                    min={today}
+                    min={minDate}
+                    max={maxDate}
                     type="date"
-                    className="bg-blak text-white border border-gray-700 p-3 rounded w-full"
+                    className="bg-[#c8865c] text-black border border-gray-700 p-3 rounded w-full"
                   />
                 </label>
                 <input
                   required
                   value={selectedTime}
-                  onChange={(e) => setSelectedTime(e.target.value)}
+                  onChange={handleTime}
                   type="time"
-                  className="bg-black text-white border border-gray-700 p-3 rounded w-full"
+                  min="09:00"
+                  max="20:00"
+                  step="60"
+                  className="bg-[#c8865c] text-white border border-gray-700 p-3 rounded w-full"
                 />
               </div>
             </div>
@@ -269,7 +308,10 @@ const AppointmentPage = () => {
                 PREFERRED BARBER
               </h2>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {barbers.map((barber) => (
+                {(selectedServiceNames.length > 0
+                  ? filteredBarbers
+                  : barbers
+                ).map((barber) => (
                   <div
                     key={barber.id}
                     onClick={() => setSelectedBarberId(barber.id)}
