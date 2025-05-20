@@ -4,6 +4,7 @@ import { supabase } from "../supabaseClient";
 import Navbar from "../navbar/page";
 import Footer from "../footer/page";
 import Image from "next/image";
+import Link from "next/link";
 
 interface Master {
   id: number;
@@ -60,9 +61,9 @@ export default function MastersPage() {
         <div className="relative z-20 flex flex-col items-center justify-center h-[600px] text-center ">
           <h1 className="text-7xl font-bold tracking-widest">Masters</h1>
           <div className="mt-4">
-            <a className="hover:text-[#c8865c] mx-1" href="/">
+            <Link className="hover:text-[#c8865c] mx-1" href="/">
               Home
-            </a>{" "}
+            </Link>{" "}
             / <span className="mx-1">Masters</span>
           </div>
         </div>

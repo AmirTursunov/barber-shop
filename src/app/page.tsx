@@ -46,7 +46,7 @@ const Home = () => {
             </h1>
             <div>
               <span className="text-white font-bold text-center md:text-start ">
-                It's all about the pleasure to feel yourself.
+                Its all about the pleasure to feel yourself.
               </span>
             </div>
             <div>

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../navbar/page";
 import { supabase } from "../supabaseClient";
 import Footer from "../footer/page";
+import Link from "next/link";
 interface Services {
   id: number;
   name: string;
@@ -53,9 +54,9 @@ const Services = () => {
         <div className="relative z-20 flex flex-col items-center justify-center h-[600px] text-center ">
           <h1 className="text-7xl font-bold tracking-widest">Services</h1>
           <div className="mt-4">
-            <a className="hover:text-[#c8865c] mx-1" href="/">
+            <Link className="hover:text-[#c8865c] mx-1" href="/">
               Home
-            </a>{" "}
+            </Link>{" "}
             / <span className="mx-1">Services</span>
           </div>
         </div>

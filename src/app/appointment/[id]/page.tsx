@@ -3,6 +3,7 @@ import Footer from "@/app/footer/page";
 import Navbar from "@/app/navbar/page";
 import { supabase } from "@/app/supabaseClient";
 import { useUser } from "@clerk/nextjs";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
 interface Service {
   id: number;
@@ -139,9 +140,9 @@ const AppointmentPage = () => {
             Appointment
           </h1>
           <div className="mt-4 text-sm md:text-base">
-            <a className="hover:text-[#c8865c] mx-1" href="/">
+            <Link className="hover:text-[#c8865c] mx-1" href="/">
               Home
-            </a>
+            </Link>
             / <span className="mx-1">Appointment</span>
           </div>
         </div>
@@ -149,7 +150,7 @@ const AppointmentPage = () => {
       {/* Appointment */}
       <div className="bg-black text-white py-16 px-4">
         <span className="uppercase text-white font-semibold text-md ml-2">
-          // Make an appointment
+          Make an appointment
         </span>
         <div className="mt-7 flex flex-col lg:flex-row gap-10 px-4 lg:px-10">
           <div className="flex flex-col gap-10 lg:w-1/2">
@@ -276,7 +277,7 @@ const AppointmentPage = () => {
               <h2 className="text-lg lg:text-xl font-bold mb-4">
                 SELECT YOUR TIME
               </h2>
-              <p>Please choose according to the master's time !</p>
+              <p>Please choose according to the masters time !</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <label>
                   <input

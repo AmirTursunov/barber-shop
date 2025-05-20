@@ -5,7 +5,7 @@ import { supabase } from "../supabaseClient";
 import { ArrowRight, LogIn } from "lucide-react";
 import Link from "next/link";
 import { Tooltip } from "react-tooltip";
-import { FiHome, FiUser, FiInfo, FiScissors } from "react-icons/fi";
+import { FiHome, FiUser, FiScissors } from "react-icons/fi";
 import "react-tooltip/dist/react-tooltip.css";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
