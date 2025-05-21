@@ -3,8 +3,9 @@ import Footer from "@/app/footer/page";
 import Navbar from "@/app/navbar/page";
 import { supabase } from "@/app/supabaseClient";
 import { useUser } from "@clerk/nextjs";
+import { ArrowDown } from "lucide-react";
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 interface Service {
   id: number;
   name: string;
@@ -33,16 +34,23 @@ const AppointmentPage = () => {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
   const [selectedServices, setSelectedServices] = useState<number[]>([]);
+  const [loading, setLoading] = useState(false);
   const { user } = useUser();
+  const appointmentRef = useRef<HTMLDivElement>(null);
 
+  function scrollToAppointment() {
+    appointmentRef.current?.scrollIntoView({ behavior: "smooth" });
+  }
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       const { data: servicesData } = await supabase
         .from("services")
         .select("*");
       const { data: barbersData } = await supabase.from("masters").select("*");
       if (servicesData) setServices(servicesData);
       if (barbersData) setBarbers(barbersData);
+      setLoading(false);
     };
     fetchData();
   }, []);
@@ -50,7 +58,7 @@ const AppointmentPage = () => {
     const selectedBarberName = barbers.find(
       (b) => b.id === selectedBarberId
     )?.name;
-
+    setLoading(true);
     const { error } = await supabase.from("appointments").insert([
       {
         full_name: fullName,
@@ -79,6 +87,7 @@ const AppointmentPage = () => {
       setSelectedLocationIndex(null);
       setSelectedServices([]);
     }
+    setLoading(false);
   }
   const selectedServiceNames = services
     .filter((service) => selectedServices.includes(service.id))
@@ -90,7 +99,16 @@ const AppointmentPage = () => {
       barberSkills.includes(selected)
     );
   });
-
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-lg text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
   // logic for input date
   const today = new Date();
   const minDate = today.toISOString().split("T")[0];
@@ -117,6 +135,7 @@ const AppointmentPage = () => {
   return (
     <div className="relative min-h-screen text-white">
       {/* Background image */}
+
       <div className="relative w-full h-[100vh]">
         <div
           className="absolute inset-0 bg-cover bg-center "
@@ -146,9 +165,19 @@ const AppointmentPage = () => {
             / <span className="mx-1">Appointment</span>
           </div>
         </div>
+        <div
+          className="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-30 cursor-pointer"
+          onClick={scrollToAppointment}
+        >
+          <div className="text-white text-3xl animate-bounce">
+            <h1>
+              <ArrowDown />
+            </h1>
+          </div>
+        </div>
       </div>
       {/* Appointment */}
-      <div className="bg-black text-white py-16 px-4">
+      <div ref={appointmentRef} className="bg-black text-white py-16 px-4">
         <span className="uppercase text-white font-semibold text-md ml-2">
           Make an appointment
         </span>

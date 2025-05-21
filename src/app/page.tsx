@@ -1,7 +1,7 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Navbar from "./navbar/page";
-import { ArrowRight } from "lucide-react";
+import { ArrowDown, ArrowRight } from "lucide-react";
 import { redirect } from "next/navigation";
 import Section1 from "./section1/page";
 import Section2 from "./section2/page";
@@ -12,7 +12,11 @@ const images = ["/bgbarber5.png", "/barberbg4.png", "/bgbarber3.png"];
 
 const Home = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const appointmentRef = useRef<HTMLDivElement>(null);
 
+  function scrollToAppointment() {
+    appointmentRef.current?.scrollIntoView({ behavior: "smooth" });
+  }
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
@@ -82,10 +86,22 @@ const Home = () => {
             </div>
           </div>
         </div>
+        <div
+          className="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-30 cursor-pointer"
+          onClick={scrollToAppointment}
+        >
+          <div className="text-white text-3xl animate-bounce">
+            <h1>
+              <ArrowDown />
+            </h1>
+          </div>
+        </div>
       </div>
-      <Section1 />
-      <Section2 />
-      <Section3 />
+      <div ref={appointmentRef}>
+        <Section1 />
+        <Section2 />
+        <Section3 />
+      </div>
       <Footer />
     </div>
   );

@@ -1,9 +1,10 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Navbar from "../navbar/page";
 import { supabase } from "../supabaseClient";
 import Footer from "../footer/page";
 import Link from "next/link";
+import { ArrowDown } from "lucide-react";
 interface Services {
   id: number;
   name: string;
@@ -14,6 +15,11 @@ interface Services {
 const Services = () => {
   const [services, setServices] = useState<Services[]>([]);
   const [loading, setLoading] = useState(false);
+  const appointmentRef = useRef<HTMLDivElement>(null);
+
+  function scrollToAppointment() {
+    appointmentRef.current?.scrollIntoView({ behavior: "smooth" });
+  }
   useEffect(() => {
     const fetchMasters = async () => {
       const { data, error } = await supabase.from("services").select("*");
@@ -28,7 +34,14 @@ const Services = () => {
   }, []);
 
   if (loading) {
-    return <div className="text-center text-xl py-10">Loading ...</div>;
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-lg text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
   }
   return (
     <div className="relative min-h-screen text-white">
@@ -60,9 +73,20 @@ const Services = () => {
             / <span className="mx-1">Services</span>
           </div>
         </div>
-        {/* Services section */}
+        <div
+          className="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-30 cursor-pointer"
+          onClick={scrollToAppointment}
+        >
+          <div className="text-white text-3xl animate-bounce">
+            <h1>
+              <ArrowDown />
+            </h1>
+          </div>
+        </div>
       </div>
-      <div className="bg-black text-white py-16 px-4">
+      {/* Services section */}
+
+      <div ref={appointmentRef} className="bg-black text-white py-16 px-4">
         <h2 className="text-4xl font-bold text-center mb-12">Our Services</h2>
 
         {/* Cuts */}

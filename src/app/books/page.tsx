@@ -1,8 +1,9 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Navbar from "../navbar/page";
 import { supabase } from "../supabaseClient";
 import { useUser } from "@clerk/nextjs";
+import { ArrowDown } from "lucide-react";
 
 interface Appointment {
   id: number;
@@ -19,12 +20,19 @@ interface Appointment {
 
 const Bookings = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [loading, setLoading] = useState(false);
   const { user } = useUser();
+  const appointmentRef = useRef<HTMLDivElement>(null);
+
+  function scrollToAppointment() {
+    appointmentRef.current?.scrollIntoView({ behavior: "smooth" });
+  }
 
   useEffect(() => {
     if (!user?.id) return;
 
     const fetchData = async () => {
+      setLoading(true);
       const { data: appointmentData, error } = await supabase
         .from("appointments")
         .select("*")
@@ -35,20 +43,35 @@ const Bookings = () => {
       }
 
       if (appointmentData) setAppointments(appointmentData);
+      setLoading(false);
     };
 
     fetchData();
   }, [user?.id]);
-
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-lg text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
   return (
-    <div className="relative min-h-screen bg-black text-white">
+    <div className="w-full min-h-screen  text-white">
       {/* Hero Section */}
-      <div className="relative w-full h-[60vh]">
+      <div className="relative w-full h-[100vh]">
         <div
           className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(/appointment.png)` }}
+          style={{ backgroundImage: `url(/booking.png)` }}
         />
-        <div className="absolute inset-0 z-10 bg-black bg-opacity-60" />
+        <div
+          className="absolute inset-0 z-10"
+          style={{
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+          }}
+        />
         <div className="relative z-30">
           <Navbar />
         </div>
@@ -61,11 +84,20 @@ const Bookings = () => {
           </p>
         </div>
       </div>
-
+      <div
+        className="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-30 cursor-pointer"
+        onClick={scrollToAppointment}
+      >
+        <div className="text-white text-3xl animate-bounce">
+          <h1>
+            <ArrowDown />
+          </h1>
+        </div>
+      </div>
       {/* Appointment List */}
-      <div className="py-16 px-4 md:px-10">
+      <div ref={appointmentRef} className="py-16 px-4 md:px-10">
         {appointments.length === 0 ? (
-          <p className="text-center text-lg text-gray-400">
+          <p className="text-center text-lg text-red-500">
             You have no appointments booked yet.
           </p>
         ) : (
