@@ -74,7 +74,7 @@ const Services = () => {
           </div>
         </div>
         <div
-          className="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-30 cursor-pointer"
+          className="absolute bottom-25 sm:bottom-10 left-1/2 transform -translate-x-1/2 z-30 cursor-pointer"
           onClick={scrollToAppointment}
         >
           <div className="text-white text-3xl animate-bounce">
