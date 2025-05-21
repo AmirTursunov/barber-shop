@@ -4,6 +4,7 @@ import Navbar from "../navbar/page";
 import { supabase } from "../supabaseClient";
 import { useUser } from "@clerk/nextjs";
 import { ArrowDown } from "lucide-react";
+import Footer from "../footer/page";
 
 interface Appointment {
   id: number;
@@ -85,7 +86,7 @@ const Bookings = () => {
         </div>
       </div>
       <div
-        className="absolute bottom-10 left-1/2 transform -translate-x-1/2 z-30 cursor-pointer"
+        className="absolute bottom-25 sm:bottom-10 left-1/2 transform -translate-x-1/2 z-30 cursor-pointer"
         onClick={scrollToAppointment}
       >
         <div className="text-white text-3xl animate-bounce">
@@ -141,6 +142,7 @@ const Bookings = () => {
           </div>
         )}
       </div>
+      <Footer />
     </div>
   );
 };
