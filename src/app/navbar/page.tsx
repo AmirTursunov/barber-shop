@@ -9,7 +9,7 @@ import { FiHome, FiUser, FiScissors } from "react-icons/fi";
 import "react-tooltip/dist/react-tooltip.css";
 import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
-import { FaCalendarCheck } from "react-icons/fa";
+import { FaCalendarCheck, FaClock } from "react-icons/fa";
 const Navbar = () => {
   const [phone, setPhone] = useState("");
   const [activeLink, setActiveLink] = useState<string>("home");

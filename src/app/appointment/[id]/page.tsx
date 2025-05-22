@@ -6,6 +6,9 @@ import { useUser } from "@clerk/nextjs";
 import { ArrowDown } from "lucide-react";
 import Link from "next/link";
 import React, { useEffect, useState, useRef } from "react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { toast } from "react-toastify";
 interface Service {
   id: number;
   name: string;
@@ -18,6 +21,9 @@ interface Barber {
   name: string;
   time: string;
   skills: string[];
+}
+interface Appointment {
+  time: string;
 }
 const locations = ["Mustaqillik", "Piridastgir", "Alpomish"];
 
@@ -35,6 +41,7 @@ const AppointmentPage = () => {
   const [selectedTime, setSelectedTime] = useState("");
   const [selectedServices, setSelectedServices] = useState<number[]>([]);
   const [loading, setLoading] = useState(false);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
   const { user } = useUser();
   const appointmentRef = useRef<HTMLDivElement>(null);
 
@@ -52,8 +59,23 @@ const AppointmentPage = () => {
       if (barbersData) setBarbers(barbersData);
       setLoading(false);
     };
+    async function getTime() {
+      const { data, error } = await supabase
+        .from("appointments")
+        .select("time")
+        .eq("user_id", user?.id);
+      console.log(data);
+
+      if (error) {
+        console.log(error.message);
+      }
+      setAppointments(data || []);
+    }
+
+    getTime();
     fetchData();
   }, []);
+
   async function handleSubmit() {
     const selectedBarberName = barbers.find(
       (b) => b.id === selectedBarberId
@@ -75,9 +97,9 @@ const AppointmentPage = () => {
 
     if (error) {
       console.error("Error inserting appointment:", error);
-      alert("Failed to book appointment.");
+      toast.error("Failed to book appointment.");
     } else {
-      alert("Appointment booked successfully!");
+      toast.success("Appointment booked successfully!");
       setFullName("");
       setPhone("");
       setEmail("");
@@ -99,16 +121,16 @@ const AppointmentPage = () => {
       barberSkills.includes(selected)
     );
   });
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-lg text-gray-600">Loading...</p>
-        </div>
-      </div>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <div className="flex items-center justify-center h-screen">
+  //       <div className="flex flex-col items-center gap-4">
+  //         <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+  //         <p className="text-lg text-gray-600">Loading...</p>
+  //       </div>
+  //     </div>
+  //   );
+  // }
   // logic for input date
   const today = new Date();
   const minDate = today.toISOString().split("T")[0];
@@ -121,13 +143,19 @@ const AppointmentPage = () => {
   // logic for input time
   function handleTime(e: React.ChangeEvent<HTMLInputElement>) {
     const value = e.target.value;
+
     const [hour, minute] = value.split(":").map(Number);
+    const takenTimes = appointments.map((a) => a.time.slice(0, 5));
+    console.log(takenTimes);
 
     if (hour < 9 || hour > 20 || (hour === 20 && minute > 0)) {
       alert("Please choose time according to the business hours !");
       return;
     }
-
+    if (takenTimes.includes(value)) {
+      alert("This time is already booked. Please choose another time.");
+      return;
+    }
     setSelectedTime(value);
   }
   // logic for input time
@@ -238,7 +266,7 @@ const AppointmentPage = () => {
             <h1 className="text-3xl lg:text-4xl font-bold mb-8">
               BOOK AN APPOINTMENT
             </h1>
-
+            <ToastContainer />
             {/* LOCATIONS */}
             <div className="mb-10">
               <h2 className="text-lg lg:text-xl font-bold mb-4">
@@ -316,7 +344,7 @@ const AppointmentPage = () => {
                     min={minDate}
                     max={maxDate}
                     type="date"
-                    className="bg-[#c8865c] text-black border border-gray-700 p-3 rounded w-full"
+                    className="bg-[#c8865c] text-white border border-gray-700 p-3 rounded w-full"
                   />
                 </label>
                 <input
@@ -400,12 +428,22 @@ const AppointmentPage = () => {
 
             {/* SUBMIT */}
             <div className="text-center">
-              <button
-                onClick={handleSubmit}
-                className="bg-[#c8865c] text-white font-bold px-8 py-3 rounded hover:opacity-90 transition-all"
-              >
-                SUBMIT →
-              </button>
+              {loading ? (
+                <button
+                  disabled
+                  onClick={handleSubmit}
+                  className="bg-[#c8865c] text-white font-bold px-8 py-3 rounded hover:opacity-90 transition-all"
+                >
+                  Loading...
+                </button>
+              ) : (
+                <button
+                  onClick={handleSubmit}
+                  className="bg-[#c8865c] text-white font-bold px-8 py-3 rounded hover:opacity-90 transition-all"
+                >
+                  SUBMIT →
+                </button>
+              )}
             </div>
           </div>
         </div>

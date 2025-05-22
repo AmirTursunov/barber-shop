@@ -5,6 +5,7 @@ import { supabase } from "../supabaseClient";
 import { useUser } from "@clerk/nextjs";
 import { ArrowDown } from "lucide-react";
 import Footer from "../footer/page";
+import Link from "next/link";
 
 interface Appointment {
   id: number;
@@ -62,6 +63,7 @@ const Bookings = () => {
   return (
     <div className="w-full min-h-screen  text-white">
       {/* Hero Section */}
+
       <div className="relative w-full h-[100vh]">
         <div
           className="absolute inset-0 bg-cover bg-center"
@@ -83,8 +85,17 @@ const Bookings = () => {
           <p className="mt-4 text-sm md:text-base text-gray-300">
             Below are all your current and past bookings
           </p>
+          <div className="mt-6">
+            <Link
+              href={user ? `/appointment/${user.id}` : "/sign-in"}
+              className="w-full lg:w-auto bg-[#c18f61] text-white px-6 py-3 rounded uppercase text-sm font-semibold hover:bg-[#a5744b] transition flex items-center justify-center gap-2"
+            >
+              Book an Appointment →
+            </Link>
+          </div>
         </div>
       </div>
+
       <div
         className="absolute bottom-25 sm:bottom-10 left-1/2 transform -translate-x-1/2 z-30 cursor-pointer"
         onClick={scrollToAppointment}
